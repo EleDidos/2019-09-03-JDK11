@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import it.polito.tdp.food.model.Arco;
 import it.polito.tdp.food.model.Condiment;
 import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Portion;
@@ -75,7 +78,7 @@ public class FoodDao {
 	}
 	
 	public List<Portion> listAllPortions(){
-		String sql = "SELECT * FROM portion" ;
+		String sql = "SELECT DISTINCT * FROM portion" ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
@@ -108,6 +111,89 @@ public class FoodDao {
 		}
 
 	}
+	
+	
+	//solo nomi delle porzioni
+	public List <String> getVertici(Integer calorie){
+		String sql = "SELECT DISTINCT portion_display_name as tipo "
+				+ "FROM portion "
+				+ "WHERE calories<?" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setInt(1, calorie);
+			
+			List<String> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				
+					list.add(res.getString("tipo"));
+				
+			}
+			
+			conn.close();
+			return list;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+
+	}
+	
+	
+	public List<Arco> getArchi(List <String> vertici){
+		String sql = "SELECT p1.portion_display_name as name1, p2.portion_display_name as name2, COUNT(DISTINCT p1.food_code) as peso "
+				+ "FROM portion p1, portion p2 "
+				+ "WHERE p1.food_code=p2.food_code and p1.portion_display_name > p2.portion_display_name "
+				+ "GROUP BY p1.portion_display_name , p2.portion_display_name" ;
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<Arco> list = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+					
+					String name1=res.getString("name1");
+					String name2=res.getString("name2");
+					
+					if(vertici.contains(name1) & vertici.contains(name2) & res.getInt("peso")>0){
+						Arco a = new Arco(name1,name2,res.getInt("peso"));
+						System.out.println(a);
+						list.add(a);
+					}
+					
+					/*for(String pi: vertici) {
+						if(pi.equals(name1))
+								p1=name1;
+						if(pi.equals(name2))
+								p2=name2;
+					}
+					
+					if(p1!="" & p2!="" & res.getInt("peso")>0) {
+						Arco a = new Arco(p1,p2,res.getInt("peso"));
+						list.add(a);
+					}*/
+					
+				
+			}
+			
+			conn.close();
+			return list ;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	
 	
 	
 

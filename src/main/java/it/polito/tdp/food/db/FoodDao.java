@@ -169,20 +169,6 @@ public class FoodDao {
 						System.out.println(a);
 						list.add(a);
 					}
-					
-					/*for(String pi: vertici) {
-						if(pi.equals(name1))
-								p1=name1;
-						if(pi.equals(name2))
-								p2=name2;
-					}
-					
-					if(p1!="" & p2!="" & res.getInt("peso")>0) {
-						Arco a = new Arco(p1,p2,res.getInt("peso"));
-						list.add(a);
-					}*/
-					
-				
 			}
 			
 			conn.close();

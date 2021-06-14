@@ -58,12 +58,10 @@ public class FoodController {
     		return;
     	}
     	
-    	txtResult.clear();
-    	txtResult.appendText("Cerco cammino peso massimo...\n");
     	
     	Integer N;//passi
     	try {
-    		N=Integer.parseInt(txtCalorie.getText());
+    		N=Integer.parseInt(txtPassi.getText());
     	}catch(NumberFormatException nfe) {
     		txtResult.setText("Inserire un numero intero di passi");
     		return;
@@ -72,9 +70,17 @@ public class FoodController {
     		return;
     	}
     	
-    	txtResult.appendText("Il cammino con peso MAX ha peso: "+model.getPeso()+"\n");
+    	
+    	txtResult.appendText("Il cammino migliore è:\n");
+    	//best vuota --> non c'è un percorso di N passi
+    	if(model.trovaPercorso(partenza, N).size()==0) {
+    		txtResult.appendText("Non esiste un percorso di N passi");
+    		return;
+    	}
     	for(String p: model.trovaPercorso(partenza, N))
     		txtResult.appendText(p+"\n");
+    	
+    	txtResult.appendText("Il peso MAX è: "+model.getPeso()+"\n");
     	
     }
 
@@ -84,9 +90,6 @@ public class FoodController {
     		txtResult.setText("Devi prima creare il GRAFO");
     		return;
     	}
-    	
-    	txtResult.clear();
-    	txtResult.appendText("Cerco porzioni correlate...\n");
     	
     	try {
     		partenza=boxPorzioni.getValue();
@@ -102,7 +105,6 @@ public class FoodController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...\n");
     	
     	Integer calorie;
     	try {
